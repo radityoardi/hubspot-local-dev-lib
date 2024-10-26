@@ -119,7 +119,7 @@ async function getRequest<T>(
   const { params, ...rest } = options;
   const optionsWithParams = addQueryParams(rest, params);
   const requestConfig = await withAuth(accountId, optionsWithParams);
-
+  logger.debug(requestConfig);
   return axios<T>(requestConfig);
 }
 
@@ -128,6 +128,7 @@ async function postRequest<T>(
   options: HttpOptions
 ): AxiosPromise<T> {
   const requestConfig = await withAuth(accountId, options);
+  logger.debug({ ...requestConfig, method: 'post' });
   return axios<T>({ ...requestConfig, method: 'post' });
 }
 
@@ -136,6 +137,7 @@ async function putRequest<T>(
   options: HttpOptions
 ): AxiosPromise<T> {
   const requestConfig = await withAuth(accountId, options);
+  logger.debug({ ...requestConfig, method: 'put' });
   return axios<T>({ ...requestConfig, method: 'put' });
 }
 
@@ -144,6 +146,7 @@ async function patchRequest<T>(
   options: HttpOptions
 ): AxiosPromise<T> {
   const requestConfig = await withAuth(accountId, options);
+  logger.debug({ ...requestConfig, method: 'patch' });
   return axios<T>({ ...requestConfig, method: 'patch' });
 }
 
@@ -152,6 +155,7 @@ async function deleteRequest<T>(
   options: HttpOptions
 ): AxiosPromise<T> {
   const requestConfig = await withAuth(accountId, options);
+  logger.debug({ ...requestConfig, method: 'delete' });
   return axios<T>({ ...requestConfig, method: 'delete' });
 }
 
@@ -168,7 +172,7 @@ function createGetRequestStream(contentType: string) {
     return new Promise<AxiosResponse>(async (resolve, reject) => {
       try {
         const { headers, ...opts } = await withAuth(accountId, axiosConfig);
-        const res = await axios({
+        const axConfig:AxiosRequestConfig = {
           method: 'get',
           ...opts,
           headers: {
@@ -176,7 +180,9 @@ function createGetRequestStream(contentType: string) {
             accept: contentType,
           },
           responseType: 'stream',
-        });
+        };
+        logger.debug(axConfig);
+        const res = await axios(axConfig);
         if (res.status >= 200 && res.status < 300) {
           let filepath = destPath;
 
