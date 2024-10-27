@@ -12,7 +12,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "rm -rf ./dist/ && tsc --rootDir . --outdir dist && yarn copy-files && yarn clear-postinstall",
+    "build": "./scripts/build.bat",
     "check-main": "branch=$(git rev-parse --abbrev-ref HEAD) && [ $branch = main ] || (echo 'Error: New release can only be published on main branch' && exit 1)",
     "clear-postinstall": "cd dist && npm pkg delete scripts.postinstall",
     "copy-files": "cp -r lang dist/lang",
@@ -25,7 +25,11 @@
     "release:major": "yarn check-main && yarn version --major && yarn build && yarn pub && yarn push",
     "release:minor": "yarn check-main && yarn version --minor && yarn build && yarn pub && yarn push",
     "release:patch": "yarn check-main && yarn version --patch && yarn build && yarn pub && yarn push",
-    "test": "NODE_NO_WARNINGS=1 node --experimental-vm-modules ./node_modules/.bin/jest"
+    "test": "NODE_NO_WARNINGS=1 node --experimental-vm-modules ./node_modules/.bin/jest",
+    "wipe": "rmdir /S /Q node_modules && rmdir /S /Q dist",
+    "link-this": "cd dist && yarn link && cd ..",
+    "unlink-this": "cd dist && yarn unlink && cd ..",
+    "compress-dist": "pwsh -c \"Compress-Archive -Path dist\\* -DestinationPath dist.zip\" -Force"
   },
   "license": "Apache-2.0",
   "devDependencies": {
